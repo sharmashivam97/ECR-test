@@ -1,0 +1,66 @@
+# name: build & push
+
+# on:
+#   push:
+#     branches:
+#       - master
+#     paths-ignore:
+#       - '**.md'
+
+# jobs:
+#   run:
+#     runs-on: ubuntu-latest
+#     env:
+#       REPO_NAME: docker-repo
+
+#     steps:
+#       - name: GitHub checkout
+#         uses: actions/checkout@v2
+
+#       - name: ECR Login
+#         run: docker login -u ${{ secrets.DOCKER_HUB_USER }} -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
+      
+#       - name: Docker Build
+#         run: docker build -t ${{ secrets.DOCKER_HUB_USER }}/${{ env.REPO_NAME }} .
+
+#       - name: Docker Push
+#         run: docker push ${{ secrets.DOCKER_HUB_USER }}/${{ env.REPO_NAME }}:latest
+name: build & push
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+
+permissions:
+  id-token: write
+  contents: read    
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      REPO_NAME: ECR-test
+    steps:
+      - name: GitHub checkout
+        uses: actions/checkout@v2
+
+      - name: AWS
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          role-to-assume: ${{ secrets.ROLE_ARN }}
+          aws-region: ca-central-1
+
+      - name: ECR Login
+        run: aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin 700366089459.dkr.ecr.ca-central-1.amazonaws.com/my-repo
+
+      - name: Docker Build
+        run: docker build -t ${{ env.REPO_NAME }} . 
+
+      - name: Docker Tag
+        run: docker tag ${{ env.REPO_NAME }}:latest 700366089459.dkr.ecr.ca-central-1.amazonaws.com/my-repo/${{ env.REPO_NAME }}:latest
+
+      - name: ECR Push
+        run: docker push 700366089459.dkr.ecr.ca-central-1.amazonaws.com/my-repo/${{ env.REPO_NAME }}:latest
