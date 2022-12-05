@@ -54,13 +54,13 @@ jobs:
           aws-region: ca-central-1
 
       - name: ECR Login
-        run: aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin 700366089459.dkr.ecr.ca-central-1.amazonaws.com/my-repo
+        run: aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin 700366089459.dkr.ecr.ca-central-1.amazonaws.com
 
       - name: Docker Build
         run: docker build -t ${{ env.REPO_NAME }} . 
 
       - name: Docker Tag
-        run: docker tag ${{ env.REPO_NAME }}:latest 700366089459.dkr.ecr.ca-central-1.amazonaws.com/my-repo/${{ env.REPO_NAME }}:latest
+        run: docker tag ${{ env.REPO_NAME }}:latest 700366089459.dkr.ecr.ca-central-1.amazonaws.com/${{ env.REPO_NAME }}:latest
 
       - name: ECR Push
-        run: docker push 700366089459.dkr.ecr.ca-central-1.amazonaws.com/my-repo/${{ env.REPO_NAME }}:latest
+        run: docker push 700366089459.dkr.ecr.ca-central-1.amazonaws.com/${{ env.REPO_NAME }}:latest
