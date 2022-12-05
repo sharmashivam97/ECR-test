@@ -42,7 +42,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     env:
-      REPO_NAME: ECR-test
+      REPO_NAME: ecr-test
     steps:
       - name: GitHub checkout
         uses: actions/checkout@v2
